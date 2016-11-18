@@ -54,3 +54,7 @@ get '/' do
   @ports = ports
   haml :index
 end
+
+get '/zz/health' do
+  'OK'
+end
