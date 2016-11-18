@@ -1,0 +1,76 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}/
+    %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+    %meta{:content => "width=device-width, initial-scale=1", :name => "viewport"}/
+    / The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
+    %title Service Ports Usage
+    / Bootstrap
+    / Latest compiled and minified CSS
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", :integrity => "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", :rel => "stylesheet"}/
+    / HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries
+    / WARNING: Respond.js doesn't work if you view the page via file://
+    /[if lt IE 9]
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  %body
+    .container
+      .page-header
+        %h1 Service Ports Usage
+        %p.lead Don't choose the same port!
+
+        %p
+          .btn-group(data-toggle="buttons")
+            %label.btn.btn-default.all.active
+              %input(type="radio" name="type" checked) All
+            %label.btn.btn-success.available
+              %input(type="radio" name="type") Available
+            %label.btn.btn-warning.used
+              %input(type="radio" name="type") Used
+            %label.btn.btn-danger.problematic
+              %input(type="radio" name="type") Problematic
+
+        %table.table.table-bordered.table-striped.table-hover.service-ports.table-responsive
+          %thead
+            %tr
+              %th PORT
+              %th APP ID
+              %th OWNER
+          %tbody
+            - @ports.each do |k, v|
+              - if v && v.size > 0
+                - v.each_with_index do |app, i|
+                  %tr.used{ class: v.size > 1 || !app[:display_owner] ? 'problematic' : '' }
+                    - if i == 0
+                      %td.bg-danger{ rowspan: v.size }= k
+                    - if v.size > 1
+                      %td.bg-danger= app[:id]
+                    - else
+                      %td= app[:id]
+                    - if app[:display_owner]
+                      %td= app[:display_owner]
+                    - else
+                      %td.bg-danger [NO OWNER]
+              - else
+                %tr.available
+                  %td.bg-success= k
+                  %td
+                  %td
+
+    / jQuery (necessary for Bootstrap's JavaScript plugins)
+    %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"}
+    / Latest compiled and minified JavaScript
+    %script{:crossorigin => "anonymous", :integrity => "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", :src => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"}
+    :javascript
+      $(function () {
+        $servicePorts = $('table.service-ports tbody tr');
+        $serviceUsedPorts = $servicePorts.filter('.used');
+        $serviceAvailablePorts = $servicePorts.filter('.available');
+        $serviceProblematicPorts = $servicePorts.filter('.problematic');
+
+        $('.btn.all').click(function () { $servicePorts.show(); });
+        $('.btn.used').click(function () { $serviceUsedPorts.show(); $serviceAvailablePorts.hide(); });
+        $('.btn.available').click(function () { $serviceUsedPorts.hide(); $serviceAvailablePorts.show(); });
+        $('.btn.problematic').click(function () { $servicePorts.hide(); $serviceProblematicPorts.show(); });
+      });
