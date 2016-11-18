@@ -1,0 +1,12 @@
+version: '2'
+services:
+  app:
+    image: agate/docker-github-rubyapp
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/home/app/webapp
+    environment:
+      - MARATHON_DOMAIN=${MARATHON_DOMAIN}
+      - PORT_RANGE_FROM=${PORT_RANGE_FROM}
+      - PORT_RANGE_TO=${PORT_RANGE_TO}
