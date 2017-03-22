@@ -14,6 +14,12 @@
     /[if lt IE 9]
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    :css
+      tr.ports-spliter td {
+        background-color: darkred;
+        height: 5px;
+        padding: 0 !important;
+      }
   %body
     .container
       .page-header
@@ -38,27 +44,29 @@
               %th APP ID
               %th OWNER
           %tbody
-            - SMALL_PORTS = @ports.keys.select { |p| p < PORT_RANGE.first }.sort
-            - (SMALL_PORTS + PORT_RANGE.to_a).each do |k|
-              - v = @ports[k]
-              - if v && v.size > 0
-                - v.each_with_index do |app, i|
-                  %tr.used{ class: v.size > 1 || !app[:display_owner] ? 'problematic' : '' }
-                    - if i == 0
-                      %td.bg-danger{ rowspan: v.size }= k
-                    - if v.size > 1
-                      %td.bg-danger= app[:id]
-                    - else
-                      %td= app[:id]
-                    - if app[:display_owner]
-                      %td= app[:display_owner]
-                    - else
-                      %td.bg-danger [NO OWNER]
-              - else
-                %tr.available
-                  %td.bg-success= k
-                  %td
-                  %td
+            :ruby
+              small_ports = []
+              large_ports = []
+              @ports.keys.select do |p|
+                if p < PORT_RANGE.first
+                  small_ports << p
+                elsif p > PORT_RANGE.last
+                  large_ports << p
+                end
+              end
+
+            - unless small_ports.empty?
+              - small_ports.sort.each do |port|
+                = haml :item, locals: { port: port }
+              %tr.ports-spliter
+                %td{ colspan: 3 }
+            - PORT_RANGE.each do |port|
+              = haml :item, locals: { port: port }
+            - unless large_ports.empty?
+              %tr.ports-spliter
+                %td{ colspan: 3 }
+              - large_ports.sort.each do |port|
+                = haml :item, locals: { port: port }
 
     / jQuery (necessary for Bootstrap's JavaScript plugins)
     %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"}

@@ -1,0 +1,20 @@
+- apps = @ports[port]
+- if apps && apps.size > 0
+  - problem_port = apps.size > 1
+  - apps.each_with_index do |app, i|
+    %tr.used{ class: problem_port || !app[:display_owner] ? 'problematic' : '' }
+      - if i == 0
+        %td.bg-danger{ rowspan: apps.size }= port
+      - if problem_port
+        %td.bg-danger= app[:id]
+      - else
+        %td= app[:id]
+      - if app[:display_owner]
+        %td= app[:display_owner]
+      - else
+        %td.bg-danger [NO OWNER]
+- else
+  %tr.available
+    %td.bg-success= port
+    %td
+    %td
