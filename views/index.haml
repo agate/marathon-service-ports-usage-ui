@@ -38,7 +38,9 @@
               %th APP ID
               %th OWNER
           %tbody
-            - @ports.each do |k, v|
+            - SMALL_PORTS = @ports.keys.select { |p| p < PORT_RANGE.first }.sort
+            - (SMALL_PORTS + PORT_RANGE.to_a).each do |k|
+              - v = @ports[k]
               - if v && v.size > 0
                 - v.each_with_index do |app, i|
                   %tr.used{ class: v.size > 1 || !app[:display_owner] ? 'problematic' : '' }

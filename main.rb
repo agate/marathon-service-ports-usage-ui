@@ -23,29 +23,23 @@ def owner(detail)
 end
 
 def ports
-  arr_ports = []
-  hash_ports = {}
+  res = {}
   apps_json = RestClient.get("http://#{MARATHON_DOMAIN}/v2/apps")
   apps = JSON.parse(apps_json)['apps']
   apps.each do |app|
-    (app['container']['docker']['portMappings'] || []).each do |m|
-      port = m['servicePort']
-      arr_ports[port] ||= []
+    (app['ports'] || []).each do |port|
+      res[port] ||= []
       item = {
         id: app['id'],
         team: (app['labels'] || {})['team'],
         owner: (app['labels'] || {})['owner'],
       }
       item[:display_owner] = owner(item)
-      arr_ports[port] << item
+      res[port] << item
     end
   end
 
-  PORT_RANGE.each do |p|
-    hash_ports[p] = arr_ports[p]
-  end
-
-  hash_ports
+  res
 end
 
 set :views, settings.root + '/views'
